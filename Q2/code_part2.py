@@ -1,6 +1,7 @@
 def is_safe(line):
     first_val, second_val = line[0], line[1]
     is_increasing, is_decreasing = False, False
+    remove_bad_level = False
 
     if first_val == second_val:
         return False
