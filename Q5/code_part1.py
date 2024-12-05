@@ -9,17 +9,19 @@ def get_middle_vals(updates):
 
     return return_list
 
-def get_correct_order_updates(updates, rules_map):
+def get_correct_order_updates(updates, after_rules):
     return_list = []
     
     for update in updates:
         nums = update.split(',')
-        i = 0
         add_to_list = True
-        while i < len(nums) - 1:
-            if nums[i+1] not in rules_map[nums[i]]:
-                add_to_list = False
-            i += 1
+        n = len(nums)
+
+        for i in range(n):
+            for j in range(i+1, n):
+                if nums[j] not in after_rules[nums[i]]:
+                    add_to_list = False
+                    break
 
         if add_to_list:
             return_list.append(nums)
@@ -27,18 +29,13 @@ def get_correct_order_updates(updates, rules_map):
     return return_list
 
 def organize_rules(ordering_rules):
-    rules_map = defaultdict(set)
+    after = defaultdict(set)
 
     for rule in ordering_rules:
         first_rule, second_rule = rule.split('|')
-        if first_rule not in rules_map:
-            set_to_add = set()
-            set_to_add.add(second_rule)
-            rules_map[first_rule] = set_to_add
-        else:
-            rules_map[first_rule].add(second_rule)
+        after[first_rule].add(second_rule)
 
-    return rules_map
+    return after
 
 def parse_file(file_path):
     ordering_rules = []
@@ -61,7 +58,7 @@ def parse_file(file_path):
 
 if __name__ == "__main__":
     ordering_rules, updates = parse_file('./input.txt')
-    rules_map = organize_rules(ordering_rules)
-    updates_in_right_order = get_correct_order_updates(updates, rules_map)
+    order_after = organize_rules(ordering_rules)
+    updates_in_right_order = get_correct_order_updates(updates, order_after)
     middle_vals = get_middle_vals(updates_in_right_order)
     print(sum(middle_vals))
